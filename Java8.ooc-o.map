@@ -1,0 +1,192 @@
+oscin-ontology:
+	ooc-o
+	;
+
+oscin-language:
+	Java8
+	;
+
+
+
+PackageDeclaration:
+	[&Module] [Module, Physical_Module] [packageName*.Identifier/project] [<ROOT>] [] []
+	=null
+	;
+
+ClassDeclaration:
+	#Module
+	=child
+	;
+
+
+enumDeclaration:
+	[&Class] [Class] [Identifier] [Module.<ROOT>] [] []
+	classModifier:
+	=child
+	;
+
+
+normalClassDeclaration:
+	[Class] [Class] [Identifier] [Module.<ROOT>] [] []
+	["componentOfPhysicalModule"] [Class] [Module] []
+	classModifier:
+	superclass:
+	typeParameters:
+	=child
+	;
+	
+classModifier!:	
+	[&Element_Visibility] [Element_Visibility] [classModifier+{PUBLIC,PROTECTED,PRIVATE}] ["Visibility".<ROOT>] [] ["visibleBy" Class]
+	[Class] [Abstract_Class, Extendable_Class] [classModifier+{ABSTRACT}] [Class] [] []
+	[Class] [Concrete_Class, NonExtendable_Class] [classModifier+{FINAL}] [Class] [] []
+	[Class] [Concrete_Class, Extendable_Class] [] [Class] [<VERIFY> Class Extendable_Class,NonExtendable_Class,Nested_Class] []
+	=null
+	;
+
+superclass!:	
+	[&Subclass] [Subclass] [] [Class] [] []
+	[&Superclass] [Superclass] [superclass.classType.Identifier] [Module.<ROOT>] [<ALT> importsClass Class]	[]
+	[Inheritance] [Inheritance] [] [Superclass."inheritance".Subclass] [] []
+	["inheritsIn"] [Subclass] [Inheritance] []
+	["inheritedIn"] [Superclass] [Inheritance] []
+	=null
+	;
+
+typeParameters!:
+	[Class]	[Generic_Class]	[] [Class] [] []
+	[&Type_Parameter] [Type_Parameter] [typeParameters.typeParameterList.typeParameter+.Identifier] [Class."type".<ROOT>] [] ["composedByTypeParameter" Class]
+	=null
+	;
+
+ClassBodyDeclaration:
+	staticInitializer:
+	=child
+	;
+
+staticInitializer!:
+	[Block] [Class_Block] [] [Class."block".<CONT>] [<CONT> composedByClassBlock Class]
+	=null
+	;
+
+MethodDeclaration:
+	[Member_Function] [Member_Function] [methodHeader.methodDeclarator.Identifier] [Class."m".<ROOT>] []
+	["componentOfClass"] [Member_Function] [Class] []
+	methodModifier:
+	methodHeader.typeParameters:	
+	methodHeader.methodDeclarator.formalParameterList:
+	methodHeader.result:
+	=child
+	;
+
+methodModifier!:
+	[Element_Visibility] [Element_Visibility] [methodModifier+{PUBLIC,PROTECTED,PRIVATE}] ["Visibility".<ROOT>] [] ["visibleBy" Member_Function]
+	[Member_Function] [Abstract_Method] [methodModifier+{ABSTRACT}] [Member_Function] [] ["componentOfAbstractClass" Member_Function]
+	[Member_Function] [Instance_Method,NonOverridable_Method] [methodModifier+{FINAL}] [Member_Function] []
+	[Member_Function] [Class_Method] [methodModifier+{STATIC}] [Member_Function] []
+	[Member_Function] [Instance_Method,Overridable_Method] [] [Member_Function] [<VERIFY> Member_Function Instance_Method,Class_Method,Abstract_Method]
+	["componentOfExtendableClass"] [Member_Function] [Class] [<VERIFY> Member_Function Overridable_Method]
+	=null
+	;
+
+methodHeader.typeParameters!:
+	[Member_Function] [Generic_Method] [] [Member_Function] []
+	[Type_Parameter] [Type_Parameter] [methodHeader.typeParameters.typeParameterList.typeParameter+.Identifier] [Member_Function."type".<ROOT>] [] ["composedByTypeParameter" Member_Function]
+	=null
+	;
+
+methodHeader.methodDeclarator.formalParameterList!:
+	formalParameterList:
+	=null
+	;
+
+methodHeader.result!:
+	
+	=null
+	;
+
+MethodBody:
+	block:
+	=null
+	;
+
+block!:
+	[Block] [Instance_Block] [] [Member_Function."block".<CONT>] [<CONT> composedByInstanceBlock Member_Function]
+	=null
+	;
+
+ConstructorDeclaration:
+	[Member_Function] [Member_Function] [constructorDeclarator.simpleTypeName.Identifier] [Class."m".<ROOT>] []
+	[Member_Function] [Constructor_Method] [] [Member_Function] []
+	constructorModifier:
+	constructorDeclarator.formalParameterList:
+	constructorBody.blockStatements:
+	=child
+	;
+
+constructorModifier!:
+	[&Element_Visibility] [Element_Visibility] [constructorModifier+{PUBLIC,PROTECTED,PRIVATE}] ["Visibility".<ROOT>] [] ["visibleBy" Member_Function]
+	=null
+	;
+
+constructorBody.blockStatements!:
+	[Block] [Instance_Block] [] [Member_Function."block".<CONT>] [<CONT> composedByInstanceBlock Member_Function] ["composedByInstanceBlock" Member_Function]
+	=null
+	;
+
+constructorDeclarator.formalParameterList!:
+	formalParameterList:
+	=null
+	;
+
+formalParameterList*:
+	formalParameterList.formalParameters:
+	formalParameterList.lastFormalParameter:
+	;
+
+formalParameterList.formalParameters!:
+	[Variable] [Method_Variable] [formalParameters.formalParameter+.variableDeclaratorId VariableModifier+] [Member_Function.<ROOT>] []
+	=null
+	;
+
+formalParameterList.lastFormalParameter!:
+	formalParameterList.lastFormalParameter.formalParameter:
+	formalParameterList.lastFormalParameter.variableDeclaratorId:
+	=null
+	;
+
+formalParameterList.lastFormalParameter.formalParameter!:
+	[Variable] [Method_Variable] [lastFormalParameter.formalParameter.variableDeclaratorId VariableModifier+/lastFormalParameter.formalParameter.variableModifier] [Member_Function.<ROOT>] []
+	=null
+	;
+
+formalParameterList.lastFormalParameter.variableDeclaratorId!:
+	[Variable] [Method_Variable] [lastFormalParameter.variableDeclaratorId VariableModifier+/lastFormalParameter.variableModifier] [Member_Function.<ROOT>] []
+	=null
+	;
+
+VariableModifier*:
+	[Mutability] [Mutability] [variableModifier{FINAL}] ["Mutability".<ROOT>] [] ["mutableBy" Variable]
+	[Element_Visibility] [Element_Visibility] [] ["Visibility"."private"] [] ["visibleBy" Variable]	
+	=null
+	;
+
+FieldDeclaration:
+	[Variable] [Member_Variable] [variableDeclaratorList.variableDeclarator+.variableDeclaratorId FieldModifier+/FieldDeclaration] [Class.<ROOT>] [] ["componentOfClass" Class]
+	=child
+	;
+
+FieldModifier*:
+	[Element_Visibility] [Element_Visibility] [fieldModifier{PUBLIC,PROTECTED,PRIVATE}] ["Visibility".<ROOT>] [] ["visibleBy" Variable]
+	[Variable] [Class_Variable] [fieldModifier{STATIC}] [Variable] []
+	[Mutability] [Mutability] [fieldModifier{FINAL}] ["Mutability".<ROOT>] [] ["mutableBy" Variable]
+	[Variable] [Instance_Variable] [] [Variable] [<VERIFY> Variable Class_Variable]
+	[Element_Visibility] [Element_Visibility] [] ["Visibility"."private"] [<VERIFY> Variable Element_Visibility] ["visibleBy" Variable]
+	=null
+	;
+
+LocalVariableDeclaration:
+	[Variable] [Local_Variable] [variableDeclaratorList.variableDeclarator+.variableDeclaratorId VariableModifier+/VariableModifier] [Block.<ROOT>] [] ["componentOfClass" Class]
+	[Variable] [Class_Variable] [] [Variable] [<VERIFY> Block Class_Block]
+	[Variable] [Local_Variable] [] [Variable] [<VERIFY> Block Instance_Block]
+	=child
+	;

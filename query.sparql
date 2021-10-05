@@ -1,0 +1,9 @@
+<CountClass>
+	SELECT   (count( ?class) as ?countClass)
+	WHERE { ?class rdf:type ooc-o:Class  }
+</CountClass>
+
+<CountMember>
+	SELECT   (count( ?class) as ?countClass)
+	WHERE { ?class rdf:type ooc-o:Class  }
+</CountMember>
