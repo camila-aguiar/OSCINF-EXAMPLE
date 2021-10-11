@@ -1,4 +1,4 @@
-package oscinf.papl.asyl;
+package oscinfexe.asyl;
 
 // Generated from Java8.g4 by ANTLR 4.9.2
 
