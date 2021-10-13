@@ -1,9 +1,4 @@
 <CountClass>
 	SELECT   (count( ?class) as ?countClass)
-	WHERE { ?class rdf:type ooc-o:Class  }
+	WHERE { ?class rdf:type ooc-o:Extendable_Class  }
 </CountClass>
-
-<CountMember>
-	SELECT   (count( ?class) as ?countClass)
-	WHERE { ?class rdf:type ooc-o:Class  }
-</CountMember>
